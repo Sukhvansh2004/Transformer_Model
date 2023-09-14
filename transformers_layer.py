@@ -60,11 +60,8 @@ class PositionalEncoding(nn.Module):
 
 class MultiHeadAttention(nn.Module):
     """
-    A model layer which implements a simplified version of masked attention, as
-    introduced by "Attention Is All You Need" (https://arxiv.org/abs/1706.03762).
-
     Usage:
-      attn = MultiHeadAttention(embed_dim, num_heads=2)
+      attn = MultiHeadAttention(dim, num_heads=2)
 
       # self-attention
       data = torch.randn(batch_size, sequence_length, embed_dim)
@@ -75,36 +72,37 @@ class MultiHeadAttention(nn.Module):
       attn_output = attn(query=data, key=other_data, value=other_data)
     """
 
-    def __init__(self, dim, num_heads, dropout=0.1):
+    def __init__(self, dim, num_heads, window_size, dropout=0.1):
         """
         Construct a new MultiHeadAttention layer.
 
         Inputs:
-         - dim: Dimension of the input 
+         - dim: Dimension of the window in input
          - num_heads: Number of attention heads
+         - window_size: Dimension of a window (MxM)
          - dropout: Dropout probability
         """
         super().__init__()
-        assert dim % num_heads == 0
+        assert dim[0] % num_heads == 0
+        assert (dim[1] * dim[2]) % (window_size[0] * window_size[1]) == 0
 
-        self.key = nn.Linear(dim, dim)
-        self.query = nn.Linear(dim, dim)
-        self.value = nn.Linear(dim, dim)
-        self.proj = nn.Linear(dim, dim)
+        self.n_head = num_heads
+        self.head_dim = (dim[0])// self.n_head
+        
+        self.key = nn.Linear(dim[0], self.head_dim)
+        self.query = nn.Linear(dim[0], self.head_dim)
+        self.value = nn.Linear(dim[0], self.head_dim)
+        self.proj = nn.Linear(dim[0], self.head_dim)
         
         self.attn_drop = nn.Dropout(dropout)
 
-        self.n_head = num_heads
-        self.dim = dim
-        self.head_dim = self.dim // self.n_head
 
     def forward(self, query, key, value, attn_mask=None):
         """
         Calculate the masked attention output for the provided data, computing
         all attention heads in parallel.
 
-        In the shape definitions below, N is the batch size, S is the source
-        sequence length, T is the target sequence length, and E is the embedding
+        In the shape definitions below, N is the batch size, S is the total no. of features, T is the target sequence length, and E is the window
         dimension.
 
         Inputs:
