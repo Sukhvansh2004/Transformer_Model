@@ -24,12 +24,19 @@ class swin(nn.Module):
 
 class multi_layer_perceptron(nn.Module):
     def __init__(self,embed_dim,):
+        """Fully Connected 2 layer neural network with GELU non linearity in between
+        
+        Inputs:
+        - embed_dim: Dimension of the inputs"""
+        
         super().__init__()
         self.layer1 = nn.Linear(embed_dim, embed_dim)
         self.non_linearity = nn.GELU()
         self.layer2 = nn.Linear(embed_dim, embed_dim)
         
     def forward(self,x):
+        """Forward Layer Implementation of the Multi Layer Perceptron"""
+        
         x = self.layer1(x)
         x = self.non_linearity(x)
         x = self.layer2
