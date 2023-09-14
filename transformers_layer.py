@@ -25,8 +25,6 @@ class PositionalEncoding(nn.Module):
         super().__init__()
         self.dropout = nn.Dropout(p=dropout)
         assert embed_dim % 2 == 0
-        # Create an array with a "batch dimension" of 1 (which will broadcast
-        # across all examples in the batch).
         pe = torch.zeros(1, max_len, embed_dim)
        
         
@@ -52,7 +50,6 @@ class PositionalEncoding(nn.Module):
          - output: the input sequence + positional encodings, of shape (N, S, D)
         """
         N, S, D = x.shape
-        # Create a placeholder, to be overwritten by your code below.
         output = torch.empty((N, S, D))
         
         output = self.dropout(x + self.pe[:,:S,:D]) 
@@ -124,23 +121,8 @@ class MultiHeadAttention(nn.Module):
         """
         N, S, E = query.shape
         N, T, E = value.shape
-        # Create a placeholder, to be overwritten by your code below.
+        
         output = torch.empty((N, S, E))
-        ############################################################################
-        # TODO: Implement multiheaded attention using the equations given in       #
-        # Transformer_Captioning.ipynb.                                            #
-        # A few hints:                                                             #
-        #  1) You'll want to split your shape from (N, T, E) into (N, T, H, E/H),  #
-        #     where H is the number of heads.                                      #
-        #  2) The function torch.matmul allows you to do a batched matrix multiply.#
-        #     For example, you can do (N, H, T, E/H) by (N, H, E/H, T) to yield a  #
-        #     shape (N, H, T, T). For more examples, see                           #
-        #     https://pytorch.org/docs/stable/generated/torch.matmul.html          #
-        #  3) For applying attn_mask, think how the scores should be modified to   #
-        #     prevent a value from influencing output. Specifically, the PyTorch   #
-        #     function masked_fill may come in handy.                              #
-        ############################################################################
-        # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         
         key = self.key(key)
         query = self.query(query)
@@ -157,10 +139,7 @@ class MultiHeadAttention(nn.Module):
         probs = F.softmax(scores,dim=-1)
         output = self.proj(torch.matmul(self.attn_drop(probs), V).moveaxis(1,2).reshape(N, S, E))
 
-        # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        ############################################################################
-        #                             END OF YOUR CODE                             #
-        ############################################################################
+
         return output
       
 
