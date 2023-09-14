@@ -75,28 +75,28 @@ class MultiHeadAttention(nn.Module):
       attn_output = attn(query=data, key=other_data, value=other_data)
     """
 
-    def __init__(self, embed_dim, num_heads, dropout=0.1):
+    def __init__(self, dim, num_heads, dropout=0.1):
         """
         Construct a new MultiHeadAttention layer.
 
         Inputs:
-         - embed_dim: Dimension of the token embedding
+         - dim: Dimension of the input 
          - num_heads: Number of attention heads
          - dropout: Dropout probability
         """
         super().__init__()
-        assert embed_dim % num_heads == 0
+        assert dim % num_heads == 0
 
-        self.key = nn.Linear(embed_dim, embed_dim)
-        self.query = nn.Linear(embed_dim, embed_dim)
-        self.value = nn.Linear(embed_dim, embed_dim)
-        self.proj = nn.Linear(embed_dim, embed_dim)
+        self.key = nn.Linear(dim, dim)
+        self.query = nn.Linear(dim, dim)
+        self.value = nn.Linear(dim, dim)
+        self.proj = nn.Linear(dim, dim)
         
         self.attn_drop = nn.Dropout(dropout)
 
         self.n_head = num_heads
-        self.emd_dim = embed_dim
-        self.head_dim = self.emd_dim // self.n_head
+        self.dim = dim
+        self.head_dim = self.dim // self.n_head
 
     def forward(self, query, key, value, attn_mask=None):
         """
