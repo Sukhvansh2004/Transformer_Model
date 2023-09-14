@@ -10,7 +10,7 @@ class MultiHeadAttention(nn.Module):
       attn = MultiHeadAttention(dim, num_heads=2)
 
       # self-attention
-      data = torch.randn(batch_size, sequence_length, embed_dim)
+      data = torch.randn(batch_size, no. of windows, a specific window, size of a window)
       self_attn_output = attn(query=data, key=data, value=data)
     """
 
