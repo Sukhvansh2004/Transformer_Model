@@ -12,7 +12,7 @@ class swin(nn.Module):
         - window_size : window dimension of the MSA"""
         super().__init__()
         self.layernorm1 = nn.LayerNorm(dim).to(device=device)
-        self.MSA = MultiHeadAttention(dim=dim, num_heads=heads, window_size=window_size).to(device=device)
+        self.MSA = MultiHeadAttention(dim=dim, num_heads=heads, window_size=window_size, device=device).to(device=device)
         self.layernorm2 = nn.LayerNorm(dim).to(device=device)
         self.MLP = multi_layer_perceptron(dim[0] * dim[1] * dim[2], device=device).to(device=device)
     
