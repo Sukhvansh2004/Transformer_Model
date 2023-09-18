@@ -38,7 +38,7 @@ class MultiHeadAttention(nn.Module):
         self.key = nn.Linear(dim[0], dim[0]).to(device=device)
         self.query = nn.Linear(dim[0], dim[0]).to(device=device)
         self.value = nn.Linear(dim[0], dim[0]).to(device=device)
-        self.B = torch.nn.init.Tensor(self.window, self.window).requires_grad_().to(device=device)
+        self.B = torch.zeros(self.window, self.window).requires_grad_().to(device=device)
 
     def forward(self, x):
        
