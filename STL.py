@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from transformers_layer import *
 
 device = 'cpu'
@@ -14,7 +15,8 @@ class swin(nn.Module):
         self.layernorm1 = nn.LayerNorm(dim).to(device=device)
         self.MSA = MultiHeadAttention(dim=dim, num_heads=heads, window_size=window_size, device=device).to(device=device)
         self.layernorm2 = nn.LayerNorm(dim).to(device=device)
-        self.MLP = multi_layer_perceptron(dim[0] * dim[1] * dim[2], device=device).to(device=device)
+        self.convolution = nn.Conv2d(dim[0], dim[0], 5, padding='same')
+#        self.MLP = multi_layer_perceptron(dim[0] * dim[1] * dim[2], device=device).to(device=device)
     
     def forward(self, features):
         """Forward Implementation of the SWIN layer on the feature vectors"""
@@ -22,6 +24,7 @@ class swin(nn.Module):
         attention_features = self.MSA(x) + x
         x = self.layernorm2(attention_features)
         shape = x.shape
+        return F.gelu(self.convolution(x)) + x #removed MLP
         return self.MLP(x.reshape(shape[0], shape[1] * shape[2] * shape[3])).reshape(shape) + x
         
 
