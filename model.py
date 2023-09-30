@@ -30,7 +30,7 @@ class SWINIR(nn.Module):
         return self.HQ_Reconstruction(self.extractor(img))
 
 
-## Modified
+## Modified (Ignored for Now)
 class SwinIR(nn.Module):
     def __init__(self, num_stages=5, num_blocks_per_stage=6, window_size=8, embedding_dim=96):
         super(SwinIR, self).__init__()
