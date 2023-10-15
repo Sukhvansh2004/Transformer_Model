@@ -20,12 +20,12 @@ class swin(nn.Module):
     
     def forward(self, features):
         """Forward Implementation of the SWIN layer on the feature vectors"""
-        x = self.layernorm1(features)
-        attention_features = self.MSA(x) + x
-        x = self.layernorm2(attention_features)
+        x = F.layer_norm(features, features.shape[1:])
+        attention_features = self.MSA(x) + features
         shape = x.shape
-        return F.gelu(self.convolution(x)) + x #removed MLP
-        return self.MLP(x.reshape(shape[0], shape[1] * shape[2] * shape[3])).reshape(shape) + x
+        x = F.layer_norm(attention_features, shape[1:])
+        return F.gelu(self.convolution(x)) + attention_features #removed MLP
+        return self.MLP(x.reshape(shape[0], shape[1] * shape[2] * shape[3])).reshape(shape) + attention_features
         
 
 class multi_layer_perceptron(nn.Module):

@@ -26,12 +26,11 @@ class MultiHeadAttention(nn.Module):
         """
         super().__init__()
         assert dim[0] % num_heads == 0
-        assert (dim[1] * dim[2]) % (window_size[0] * window_size[1]) == 0
 
         self.n_head = num_heads
         self.head_dim = (dim[0])// self.n_head
         self.window = window_size[0] * window_size[1]
-        self.local_window = (dim[1] * dim[2]) // (window_size[0] * window_size[1])
+        
         
         self.attn_drop = nn.Dropout(dropout)
         
@@ -41,6 +40,11 @@ class MultiHeadAttention(nn.Module):
         self.B = torch.zeros(self.window, self.window).requires_grad_().to(device=device)
 
     def forward(self, x):
+       
+        dim = x.shape[1:]
+        
+        assert (dim[1] * dim[2]) % (self.window) == 0
+        self.local_window = (dim[1] * dim[2]) // (self.window)
        
         shape = x.shape
         x = x.moveaxis((1,2,3),(3,1,2))
