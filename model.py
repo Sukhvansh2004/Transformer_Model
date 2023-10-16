@@ -18,7 +18,7 @@ class SWINIR(nn.Module):
         - attn_head: No. of attention heads for the MSA"""
         
         super().__init__()
-        self.extractor = feature(input_dimension = dim, output_dimension = (channel_nos,), n = np.ones(RSTB_nos, dtype=int) * STL_nos, heads = np.ones((RSTB_nos, STL_nos), dtype=int) * attn_head, window_size = window_size, device=device).to(device=device)
+        self.extractor = feature(input_dimension = dim, output_dimension = (channel_nos,*dim[1:]), n = np.ones(RSTB_nos, dtype=int) * STL_nos, heads = np.ones((RSTB_nos, STL_nos), dtype=int) * attn_head, window_size = window_size, device=device).to(device=device)
         self.HQ_Reconstruction = nn.Sequential(
             nn.ConvTranspose2d(channel_nos, channel_nos//4, 4, 2, padding=1),
             nn.Conv2d(channel_nos//4, channel_nos//4, 3, padding="same"),
